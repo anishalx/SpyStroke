@@ -3,8 +3,11 @@
 
 **SpyStroke** is a sophisticated and stealthy keylogger that captures keystrokes seamlessly and delivers logs directly to your **Telegram bot**. Designed with precision and minimal footprint, SpyStroke ensures effective monitoring while maintaining operational invisibility. This tool is perfect for both **ethical research and cybersecurity enthusiasts**.
 
----
+<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="100%"></p>
 
+<h2 align="center">METHODS FOR TELEGRAM</h2>
+
+<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="100%"></p>
 ## 🚀 Features
 - **Real-time keystroke capture** with special key combinations like `Ctrl`, `Shift`, and more.
 - **Telegram bot integration** for immediate delivery of keystroke logs.
@@ -92,7 +95,11 @@ This tool is intended for **educational and ethical use only**. The author is no
 </p>
 
 
----
+<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="70%"></p>
+
+<h2 align="center">METHODS FOR EMAIL</h2>
+
+<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="70%"></p>
 
 ##  Contributing
 We welcome contributions to enhance SpyStroke!  
