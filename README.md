@@ -8,6 +8,7 @@
 <h2 align="center">METHODS FOR TELEGRAM</h2>
 
 <p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="100%"></p>
+
 ## 🚀 Features
 - **Real-time keystroke capture** with special key combinations like `Ctrl`, `Shift`, and more.
 - **Telegram bot integration** for immediate delivery of keystroke logs.
