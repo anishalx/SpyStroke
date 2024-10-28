@@ -85,7 +85,12 @@ This tool is intended for **educational and ethical use only**. The author is no
 
 ## 🖥️ Demo
 
-![Demo](https://via.placeholder.com/800x400.png?text=Demo+Coming+Soon)
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=your-video-id">
+    <img src="https://img.youtube.com/vi/your-video-id/maxresdefault.jpg" alt="Watch the video" width="600">
+  </a>
+</p>
+
 
 ---
 
