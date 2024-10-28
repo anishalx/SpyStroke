@@ -33,6 +33,7 @@ Open your terminal or command prompt and run:
 
    ```bash
    git clone https://github.com/anishalx/SpyStroke.git
+   cd SpyStroke
    cd telegram
    ```
 
