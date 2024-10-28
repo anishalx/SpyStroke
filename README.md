@@ -27,7 +27,15 @@ To set up and run SpyStroke on your machine, follow these steps:
 
 Ensure you have **Python 3.x** installed. You can download Python from the [official Python website](https://www.python.org/downloads/).
 
-### 2. Clone the Repository
+### 2. Install Dependencies
+
+Use `pip` to install the required Python packa
+
+```bash
+pip install pynput python-telegram-bot requests
+```
+
+### 3. Clone the Repository
 
 Open your terminal or command prompt and run:
 
@@ -36,13 +44,7 @@ Open your terminal or command prompt and run:
    cd SpyStroke/telegram
    ```
 
-### 3. Install Dependencies
 
-Use `pip` to install the required Python packa
-
-```bash
-pip install pynput python-telegram-bot requests
-```
 
 
 ### 4. Set Up Your Telegram Bot
