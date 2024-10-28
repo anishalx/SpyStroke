@@ -1,6 +1,5 @@
 # SpyStroke: Advanced Keylogger with Telegram Integration  
 
-![SpyStroke Logo](https://via.placeholder.com/800x200.png?text=SpyStroke+-+Stealth+Keystroke+Monitoring)  
 
 **SpyStroke** is a sophisticated and stealthy keylogger that captures keystrokes seamlessly and delivers logs directly to your **Telegram bot**. Designed with precision and minimal footprint, SpyStroke ensures effective monitoring while maintaining operational invisibility. This tool is perfect for both **ethical research and cybersecurity enthusiasts**.
 
