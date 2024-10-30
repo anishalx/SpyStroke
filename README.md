@@ -87,8 +87,8 @@ python spystroke.py
 ## 🖥️ Demo
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=your-video-id">
-    <img src="https://img.youtube.com/vi/your-video-id/maxresdefault.jpg" alt="Watch the video" width="600">
+  <a href="https://www.youtube.com/watch?v=PDjj01xPFcA">
+    <img src="https://img.youtube.com/vi/PDjj01xPFcA/maxresdefault.jpg" alt="Watch the video" width="600">
   </a>
 </p>
 
