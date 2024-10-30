@@ -29,7 +29,7 @@ Ensure you have **Python 3.x** installed. You can download Python from the [offi
 
 ### 2. Install Dependencies
 
-Use `pip` to install the required Python packa
+Use `pip` to install the required Python package
 
 ```bash
 pip install pynput python-telegram-bot requests
