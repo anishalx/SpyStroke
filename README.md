@@ -84,11 +84,6 @@ python spystroke.py
 
 ---
 
-##  Disclaimer
-This tool is intended for **educational and ethical use only**. The author is not responsible for any misuse or illegal activity involving this tool. Use responsibly and in compliance with all relevant laws and regulations.
-
----
-
 ## 🖥️ Demo
 
 <p align="center">
@@ -103,6 +98,9 @@ This tool is intended for **educational and ethical use only**. The author is no
 <h2 align="center">METHODS FOR EMAIL</h2>
 
 <p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="70%"></p>
+
+> [!WARNING]  
+> This tool is intended for **educational and ethical use only**. The author is not responsible for any misuse or illegal activity involving this tool. Use responsibly and in compliance with all relevant laws and regulations.
 
 ##  Contributing
 We welcome contributions to enhance SpyStroke!  
