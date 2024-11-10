@@ -1,4 +1,6 @@
 # SpyStroke: Advanced Keylogger with Telegram Integration  
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke?ref=badge_shield)
+
 
 
 **SpyStroke** is a sophisticated and stealthy keylogger that captures keystrokes seamlessly and delivers logs directly to your **Telegram bot**. Designed with precision and minimal footprint, SpyStroke ensures effective monitoring while maintaining operational invisibility. This tool is perfect for both **ethical research and cybersecurity enthusiasts**.
@@ -119,8 +121,10 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 ---
 
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke?ref=badge_large)
+
 ## 📢 Support and Feedback
 For issues or suggestions, feel free to open a **GitHub issue** or contact me via [Email](mailto:s7vdi6a8l@mozmail.com).
 
 ---
-
