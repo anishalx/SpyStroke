@@ -92,7 +92,7 @@ python spystroke.py
    
 <p align="center">
 <a href="https://rumble.com/v6qm3q6-python-keylogger-capture-keystrokes-and-send-logs-to-telegram-full-setup-an.html">
- <img src="https://github.com/user-attachments/assets/42098b22-a9e5-4680-8698-5ebf098dd099" alt="Watch the video" width="600">
+<img src="https://github.com/user-attachments/assets/42098b22-a9e5-4680-8698-5ebf098dd099" alt="Watch the video" width="600">
 </a>
 </p>
 
