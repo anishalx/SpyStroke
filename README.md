@@ -132,3 +132,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 For issues or suggestions, feel free to open a **GitHub issue** or contact me via [Email](mailto:s7vdi6a8l@mozmail.com).
 
 ---
+
+[![Star History Chart](https://api.star-history.com/svg?repos=anishalx/spystroke&type=Timeline)](https://www.star-history.com/#anishalx/spystroke&Timeline)
