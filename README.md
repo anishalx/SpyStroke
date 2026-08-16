@@ -1,136 +1,194 @@
-# SpyStroke: Advanced Keylogger with Telegram Integration  
+# SpyStroke: Advanced Keylogger with Telegram & Email Integration
+
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke?ref=badge_shield)
 
+**SpyStroke** captures keystrokes and delivers logs to your **Telegram bot** or by
+**email**. Designed for ethical research, cybersecurity testing on systems you own,
+and educational purposes.
 
+> [!WARNING]
+> This tool is intended for **educational and ethical use only** — use it only on
+> devices you own or have explicit permission to monitor. The author is not
+> responsible for any misuse. Comply with all relevant laws.
 
-**SpyStroke** is a sophisticated and stealthy keylogger that captures keystrokes seamlessly and delivers logs directly to your **Telegram bot**. Designed with precision and minimal footprint, SpyStroke ensures effective monitoring while maintaining operational invisibility. This tool is perfect for both **ethical research and cybersecurity enthusiasts**.
-
-<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="100%"></p>
-
-<h2 align="center">METHODS FOR TELEGRAM</h2>
-
-<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="100%"></p>
+---
 
 ## 🚀 Features
-- **Real-time keystroke capture** with special key combinations like `Ctrl`, `Shift`, and more.
-- **Telegram bot integration** for immediate delivery of keystroke logs.
-- **Silent operation**: No terminal output, avoiding suspicion.
-- **Cross-platform support**: Works on Windows, macOS, and Linux.
-- **Asynchronous log delivery**: Customize time intervals for reports.
-- **Clean and lightweight code** with Python.
+
+- **Robust keystroke capture** — correct handling of special keys (`Ctrl`, `Shift`,
+  `Alt`, arrows, function keys, media keys, …); a single unknown key can never crash
+  the logger.
+- **Thread-safe buffering** — keystrokes are collected in a lock-protected buffer and
+  drained on a fixed schedule; no race conditions between the keyboard thread and the
+  reporter.
+- **Reliable delivery** — automatic retries with exponential backoff for network
+  hiccups, respect for Telegram rate limits, fail-fast on configuration errors, and
+  automatic chunking of messages over Telegram's 4096-character limit.
+- **No hardcoded secrets** — all credentials come from environment variables or a
+  `.env` file.
+- **Graceful shutdown** — `/exit`, `Ctrl+C` and signals cleanly stop the listener and
+  reporter (no `os._exit`).
+- **Cross-platform** — Windows, macOS, Linux.
+- **Fully unit-tested** — 64 tests covering key formatting, concurrency, config
+  parsing and both delivery channels.
 
 ---
 
-## Installation
+## 📁 Project structure
 
-To set up and run SpyStroke on your machine, follow these steps:
+```
+spystroke/                # shared engine (used by both entry points)
+├── core.py               # key formatting + thread-safe keystroke buffer + listener
+├── config.py             # environment-based configuration
+├── telegram_reporter.py  # async Telegram delivery with retry/backoff/chunking
+├── email_reporter.py     # SMTP delivery with retry/backoff
+├── supervisor.py         # process watchdog: restart on crash, CLI (run/install/status)
+└── autostart.py          # per-user boot registration (Windows / systemd / launchd)
+telegram/
+└── bot.py                # Telegram bot entry point (commands below)
+email/
+├── keylogger.py          # email keylogger wrapper (Keylogger class)
+└── main.py               # email entry point
+tests/                    # pytest suite
+```
 
-### 1. Prerequisites
-
-Ensure you have **Python 3.x** installed. You can download Python from the [official Python website](https://www.python.org/downloads/).
-
-### 2. Install Dependencies
-
-Use `pip` to install the required Python package
+## 🛠 Installation
 
 ```bash
-pip install pynput python-telegram-bot requests
+# 1. Clone and enter the repository
+git clone https://github.com/anishalx/SpyStroke.git
+cd SpyStroke
+
+# 2. (Recommended) create a virtual environment
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+
+# 3. Install dependencies
+pip install -r requirements.txt
+
+# 4. Configure credentials (see below)
+cp .env.example .env             # then edit .env with your values
 ```
 
-### 3. Clone the Repository
+## ⚙️ Configuration
 
-Open your terminal or command prompt and run:
+All settings are read from environment variables or a `.env` file in the project
+root (a `.env.example` template is included). **Never commit your `.env`.**
 
-   ```bash
-   git clone https://github.com/anishalx/SpyStroke.git
-   cd SpyStroke/telegram
-   ```
+| Variable | Default | Used by | Description |
+|---|---|---|---|
+| `SPYSTROKE_BOT_TOKEN` | – | Telegram | Bot token from [@BotFather](https://t.me/BotFather) |
+| `SPYSTROKE_CHAT_ID` | – | Telegram | Chat ID for log delivery (from [@userinfobot](https://t.me/userinfobot)) |
+| `SPYSTROKE_EMAIL` | – | Email | Sender address |
+| `SPYSTROKE_EMAIL_PASSWORD` | – | Email | SMTP password — Gmail requires an [app password](https://support.google.com/accounts/answer/185833) |
+| `SPYSTROKE_RECEIVER` | sender | Email | Optional different recipient |
+| `SPYSTROKE_INTERVAL` | `10` (TG) / `120` (email) | both | Seconds between reports |
+| `SPYSTROKE_SMTP_HOST` | `smtp.gmail.com` | Email | SMTP server |
+| `SPYSTROKE_SMTP_PORT` | `587` | Email | SMTP port |
+| `SPYSTROKE_SMTP_TLS` | `1` | Email | `1` = STARTTLS, `0` = implicit TLS |
+| `SPYSTROKE_SILENT` | `0` | both | `1` suppresses console output |
+| `SPYSTROKE_LOG_FILE` | – | both | Optional file for logs |
 
+## 📨 Telegram delivery
 
+1. Create a bot with [@BotFather](https://t.me/BotFather) and get its token.
+2. Get your chat ID from [@userinfobot](https://t.me/userinfobot).
+3. Set `SPYSTROKE_BOT_TOKEN` and `SPYSTROKE_CHAT_ID` in `.env`.
+4. Start the bot:
 
+```bash
+python telegram/bot.py
+```
 
-### 4. Set Up Your Telegram Bot
+### Bot commands
 
-1. Go to [Telegram](https://telegram.org) and search for the **BotFather**.
-2. Use the `/newbot` command to create a new bot.
-3. You will receive a **bot token**. Keep this safe.
-4. Start a chat with your bot by searching for its name in Telegram.
-5. Use [this bot](https://t.me/getmyid_bot) to retrieve your **chat ID** (the ID where you want the logs sent).
+| Command | Action |
+|---|---|
+| `/start` | Show help |
+| `/key_logger` | Start capturing keystrokes and reporting them |
+| `/stop` | Stop capturing (bot stays online) |
+| `/status` | Show whether the keylogger is running and buffered size |
+| `/exit` | Stop everything and shut the bot down |
 
-### 5. Configure the Bot Token and Chat ID
+## ✉️ Email delivery
 
-Open the `main.py` file and replace the placeholders with your **bot token** and **chat ID**:
+```bash
+export SPYSTROKE_EMAIL=you@gmail.com
+export SPYSTROKE_EMAIL_PASSWORD=your-app-password
+python email/main.py
+```
+
+For direct scripting use, the original `Keylogger` class is preserved:
 
 ```python
-bot_token = "YOUR_TELEGRAM_BOT_TOKEN"
-chat_id = "YOUR_TELEGRAM_CHAT_ID"
+from email.keylogger import Keylogger
+
+kl = Keylogger(120, "you@gmail.com", "your-app-password")
+kl.start()
 ```
 
-### 6. Run the SpyStroke keylogger:
-To start the keylogger, use:
+## 🧪 Testing
+
+```bash
+pip install -r requirements.txt   # includes pytest
+python -m pytest tests/ -v
 ```
-python spystroke.py
+
+## 🔄 Auto-start & process persistence
+
+The included **supervisor** keeps the bot alive: it runs the bot as a child
+process and automatically restarts it if it crashes (with exponential backoff
+so a crash loop can't hammer the system). It can also register the bot to
+start automatically when the machine boots — **per user, no admin rights
+needed**.
+
+```bash
+# Run the Telegram bot under supervision (foreground)
+python -m spystroke.supervisor run telegram
+
+# Register the bot to start automatically at boot
+python -m spystroke.supervisor install telegram
+
+# Check what is running / registered
+python -m spystroke.supervisor status
+
+# Remove the boot registration (bot keeps running until stopped)
+python -m spystroke.supervisor uninstall telegram
 ```
 
----
+Replace `telegram` with `email` for the email entry point.
 
-##  Usage
+How boot registration works per platform (all user-level, no admin):
 
-1. **Start the Telegram bot**:
-   - Send `/start` to your bot to receive the introductory message.
-   - Use `/key_logger` to start capturing keystrokes.
-   - Use `/exit` to stop the keylogger and shut down the bot.
+| Platform | Mechanism | Artifact |
+|---|---|---|
+| Windows | Startup folder + hidden `pythonw` launcher | `%APPDATA%\...\Startup\spystroke-<name>.vbs` |
+| Linux | systemd *user* service (with `Restart=always`; linger enabled so it runs before login) | `~/.config/systemd/user/spystroke-<name>.service` |
+| macOS | launchd LaunchAgent (`RunAtLoad` + `KeepAlive`) | `~/Library/LaunchAgents/com.spystroke.<name>.plist` |
 
-2. **Configure reporting interval**:
-   - Modify the `interval` value in the code to change the frequency of log delivery.
+Supervisor state (pid files, logs) lives in `~/.spystroke/`. The supervisor
+redirects the bot's output to `spystroke-<name>.log` there, so the bot stays
+silent in the background. Stopping the supervisor (Ctrl+C, or a signal)
+gracefully stops the child bot first.
 
----
+> [!NOTE]
+> Auto-start requires the `.env` / environment configuration to be in place
+> **before** boot registration, otherwise the bot will fail validation on
+> startup and the supervisor will keep retrying with backoff.
 
-## 🖥️ Demo
+## 🔒 Security notes
 
+- Credentials are read from the environment, never hardcoded.
+- Delivery failures are logged and retried with backoff; authentication and
+  configuration errors fail fast instead of retrying forever.
+- The listener catches and logs every key event defensively — one malformed key
+  cannot take down the logger.
 
-   
-<p align="center">
-<a href="https://rumble.com/v6qm3q6-python-keylogger-capture-keystrokes-and-send-logs-to-telegram-full-setup-an.html">
-<img src="https://github.com/user-attachments/assets/42098b22-a9e5-4680-8698-5ebf098dd099" alt="Watch the video" width="600">
-</a>
-</p>
+## 📄 License
 
-
-<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="70%"></p>
-
-<h2 align="center">METHODS FOR EMAIL</h2>
-
-<p align="center"><img src="https://raw.githubusercontent.com/khoa083/khoa/main/Khoa_ne/img/Rainbow.gif" width="70%"></p>
-
-> [!WARNING]  
-> This tool is intended for **educational and ethical use only**. The author is not responsible for any misuse or illegal activity involving this tool. Use responsibly and in compliance with all relevant laws and regulations.
-
-##  Contributing
-We welcome contributions to enhance SpyStroke!  
-1. **Fork the repository**.
-2. **Create a branch**:  
-   ```bash
-   git checkout -b feature-branch
-   ```
-3. **Make your changes** and submit a **pull request**.
-
----
-# 📄 License
-<details>
-<summary>click here to see license</summary>
-<br>
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
-
----
-<br>
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fanishalx%2FSpyStroke?ref=badge_large)
-</details>
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file.
 
 ## 📢 Support and Feedback
-For issues or suggestions, feel free to open a **GitHub issue** or contact me via [Email](mailto:s7vdi6a8l@mozmail.com).
 
----
-
-[![Star History Chart](https://api.star-history.com/svg?repos=anishalx/spystroke&type=Timeline)](https://www.star-history.com/#anishalx/spystroke&Timeline)
+For issues or suggestions, open a **GitHub issue** or contact the author via
+[email](mailto:s7vdi6a8l@mozmail.com).

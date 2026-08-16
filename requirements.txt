@@ -1,0 +1,8 @@
+# SpyStroke runtime dependencies
+pynput>=1.7.6
+python-telegram-bot>=21.0
+httpx>=0.27.0
+python-dotenv>=1.0.0
+
+# Dev / testing
+pytest>=8.0.0

