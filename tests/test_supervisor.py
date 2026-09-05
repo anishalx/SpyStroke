@@ -8,13 +8,82 @@ from pathlib import Path
 
 import pytest
 
-from spystroke.supervisor import Supervisor
+from spystroke.supervisor import DISCLAIMER, Supervisor, main as supervisor_main
 
 
 @pytest.fixture
 def workdir(tmp_path):
     """A temp dir with tiny delays so tests run fast."""
     return tmp_path
+
+
+# ---------------------------------------------------------------------------
+# Consent gate on run/install
+# ---------------------------------------------------------------------------
+
+
+def _non_interactive(monkeypatch):
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: False)
+
+
+def test_main_run_aborts_without_consent_non_interactive(monkeypatch, capsys):
+    """A non-interactive run without --yes must abort, never auto-start."""
+    _non_interactive(monkeypatch)
+    assert supervisor_main(["run", "telegram"]) == 1
+    captured = capsys.readouterr()
+    assert DISCLAIMER.strip() in captured.out
+    assert "consent not confirmed" in captured.err.lower()
+
+
+def test_main_install_requires_yes_non_interactive(monkeypatch, capsys):
+    """install is gated too; --yes is mandatory without a terminal."""
+    _non_interactive(monkeypatch)
+    assert supervisor_main(["install", "email"]) == 1
+    assert "consent not confirmed" in capsys.readouterr().err.lower()
+
+
+def test_main_install_proceeds_with_yes_non_interactive(monkeypatch, capsys, tmp_path):
+    """--yes skips the prompt and the install proceeds."""
+    _non_interactive(monkeypatch)
+    monkeypatch.setattr(
+        "spystroke.supervisor.install_autostart",
+        lambda name: tmp_path / f"{name}.service",
+    )
+    assert supervisor_main(["install", "telegram", "--yes"]) == 0
+    captured = capsys.readouterr()
+    assert DISCLAIMER.strip() in captured.out  # disclaimer always printed
+    assert "Auto-start registered" in captured.out
+
+
+def test_main_install_consent_denied(monkeypatch, capsys):
+    """Typing anything but 'yes' aborts the install."""
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr("builtins.input", lambda prompt: "nope")
+    assert supervisor_main(["install", "telegram"]) == 1
+    assert "consent not confirmed" in capsys.readouterr().err.lower()
+
+
+def test_main_install_consent_granted(monkeypatch, capsys, tmp_path):
+    """Typing 'yes' proceeds with the install."""
+    monkeypatch.setattr(sys.stdin, "isatty", lambda: True)
+    monkeypatch.setattr("builtins.input", lambda prompt: "yes")
+    monkeypatch.setattr(
+        "spystroke.supervisor.install_autostart",
+        lambda name: tmp_path / f"{name}.service",
+    )
+    assert supervisor_main(["install", "telegram"]) == 0
+    assert "Auto-start registered" in capsys.readouterr().out
+
+
+def test_main_status_does_not_require_consent(monkeypatch, capsys, tmp_path):
+    """status is informational and never gated."""
+    _non_interactive(monkeypatch)
+    monkeypatch.setattr("spystroke.supervisor.state_dir", lambda: tmp_path)
+    monkeypatch.setattr("spystroke.supervisor.autostart_installed", lambda name: False)
+    assert supervisor_main(["status"]) == 0
+    out = capsys.readouterr().out
+    assert "telegram" in out and "email" in out
+    assert DISCLAIMER.strip() not in out
 
 
 def test_default_state_dir_uses_home(tmp_path, monkeypatch):

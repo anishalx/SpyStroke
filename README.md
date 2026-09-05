@@ -158,6 +158,14 @@ python -m spystroke.supervisor uninstall telegram
 
 Replace `telegram` with `email` for the email entry point.
 
+> [!IMPORTANT]
+> `run` and `install` print the legal disclaimer and require you to type
+> `yes` to confirm you are authorized to monitor the device before anything
+> starts. In non-interactive contexts (CI, scripts, pipes) the command
+> aborts unless you pass `--yes` explicitly, e.g.
+> `python -m spystroke.supervisor install telegram --yes` — consent is
+> never assumed.
+
 How boot registration works per platform (all user-level, no admin):
 
 | Platform | Mechanism | Artifact |

