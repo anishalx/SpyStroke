@@ -29,7 +29,7 @@ and educational purposes.
 - **Graceful shutdown** — `/exit`, `Ctrl+C` and signals cleanly stop the listener and
   reporter (no `os._exit`).
 - **Cross-platform** — Windows, macOS, Linux.
-- **Fully unit-tested** — 64 tests covering key formatting, concurrency, config
+- **Fully unit-tested** — 86 tests covering key formatting, concurrency, config
   parsing and both delivery channels.
 
 ---

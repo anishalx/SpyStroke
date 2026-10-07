@@ -3,8 +3,6 @@
 import smtplib
 from unittest import mock
 
-import pytest
-
 from spystroke.email_reporter import EmailReporter
 
 

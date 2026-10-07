@@ -9,7 +9,6 @@ from spystroke.core import KeystrokeBuffer
 # Import the entry module the same way it is loaded in production.
 import importlib.util
 import os
-import sys
 
 _SPEC = importlib.util.spec_from_file_location(
     "tbot_entry", os.path.join(os.path.dirname(__file__), "..", "telegram", "bot.py")

@@ -5,7 +5,6 @@ from types import SimpleNamespace
 from unittest import mock
 
 import httpx
-import pytest
 
 from spystroke.telegram_reporter import (
     MAX_MESSAGE_LENGTH,

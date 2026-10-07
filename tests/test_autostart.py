@@ -1,8 +1,5 @@
 """Tests for spystroke.autostart: boot registration on all platforms."""
 
-import sys
-from pathlib import Path
-
 import pytest
 
 from spystroke.autostart import (
@@ -69,6 +66,9 @@ class TestWindows:
         # Uses pythonw (no console) and runs the supervisor hidden.
         assert "pythonw.exe" in content
         assert "spystroke.supervisor run telegram" in content
+        # Boot has no tty: the launcher must carry --yes or the consent
+        # gate aborts the supervisor before it ever starts.
+        assert "run telegram --yes" in content
         assert str(fake_root) in content
         # No system commands on Windows.
         assert recorder.commands == []
@@ -116,6 +116,8 @@ class TestLinux:
 
         content = target.read_text(encoding="utf-8")
         assert f"ExecStart={fake_python} -m spystroke.supervisor run telegram" in content
+        # Boot has no tty, so the unit must pass --yes to get past consent.
+        assert "run telegram --yes" in content
         assert f"WorkingDirectory={fake_root}" in content
         assert "Restart=always" in content
 
@@ -155,6 +157,8 @@ class TestMacOS:
         assert "<key>KeepAlive</key>" in content
         assert "<true/>" in content
         assert str(fake_python) in content
+        # Boot has no tty, so the agent must pass --yes to get past consent.
+        assert "<string>--yes</string>" in content
 
         # LaunchAgent is loaded with launchctl.
         assert recorder.commands[0][:3] == ["launchctl", "load", "-w"]

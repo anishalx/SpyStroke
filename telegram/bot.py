@@ -26,7 +26,7 @@ from typing import Optional
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from telegram import Update  # noqa: E402
-from telegram.ext import Application, ApplicationBuilder, CommandHandler, ContextTypes  # noqa: E402
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes  # noqa: E402
 
 from spystroke.config import TelegramConfig, load_telegram_config  # noqa: E402
 from spystroke.core import KeyListener  # noqa: E402
